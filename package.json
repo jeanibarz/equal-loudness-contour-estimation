@@ -1,0 +1,23 @@
+{
+  "name": "equal-loudness-contour-estimation",
+  "version": "1.0.0",
+  "description": "Web application to estimate your individualized equal-loudness-contour by subjective evaluation using bandpass filtered decorrelated pink noise.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "audiolet": "git+https://github.com/jeanibarz/Audiolet.git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeanibarz/equal-loudness-contour-estimation.git"
+  },
+  "keywords": [],
+  "author": "Jean Ibarz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeanibarz/equal-loudness-contour-estimation/issues"
+  },
+  "homepage": "https://github.com/jeanibarz/equal-loudness-contour-estimation#readme"
+}
