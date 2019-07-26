@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "audiolet": "git+https://github.com/jeanibarz/Audiolet.git"
+    "audiolet": "git+https://github.com/jeanibarz/Audiolet.git",
+    "vue": "^2.6.10"
   },
   "repository": {
     "type": "git",
