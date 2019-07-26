@@ -1,5 +1,5 @@
 # equal-loudness-contour-estimation
-Web application to estimate your individualized equal-loudness-contour by subjective evaluation using bandpass filtered decorrelated pink noise.
+A web application to estimate your individualized equal-loudness-contour by subjective evaluation using bandpass filtered decorrelated pink noise.
 
 # Installation
 
