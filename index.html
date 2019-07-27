@@ -1,35 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="user-scalable=no">
     <title>Equal Loudness Contour Estimation</title>
-    <link rel="stylesheet" href="./styles.css">
-  </head>
+    <link rel="stylesheet" href="./assets/css/main.css">
+</head>
 
-  <!doctype html>
+<!doctype html>
 
-  <body>
-    <div id="wrap">
-      <header>
+<body>
+    <!-- Header -->
+    <header id="demo-header">
         <h1>Equal Loudness Contour Estimation</h1>
-      </header>
-      <section id="abstract">
-        <p>A simple program to estimate your individual Equal Loudness Contour.</p>
-      </section>
-      <section id="play">
-        <button type="button" id="playButton" onclick="play()">&#9654; Play noise</button>
-      </section>
-      <section id="inc_freq">
-        <button type="button" id="incFreqButton" onclick="incFreq()">&#9654; Increase freq.</button>
-      </section>
-      <section id="dec_freq">
-        <button type="button" id="decFreqButton" onclick="decFreq()">&#9654; Decrease freq.</button>
-      </section>
-      <section id="info">
-        <p id="refTestFreqs">Ref/test: </p>
-      </section>
+        <section id="abstract">
+            <p>A simple program to estimate your individual Equal Loudness Contour.</p>
+        </section>
+    </header>
+
+    <!-- Main -->
+    <div id="demo-main">
+        <ul class="actions">
+            <li id="play">
+                <button type="button" id="playButton" onclick="play()" class="button special" style="width:200px">
+                    <span>&#9654; Play noise</span>
+                </button>
+            </li>
+            <li id="inc_freq">
+                <button type="button" id="incFreqButton" onclick="incFreq()" class="button special">&#9654; Increase freq.</button>
+            </li>
+            <li id="dec_freq">
+                <button type="button" id="decFreqButton" onclick="decFreq()" class="button special">&#9654; Decrease freq.</button>
+            </li>
+            <section id="info">
+                <p id="refTestFreqs">Ref/test: </p>
+            </section>
+        </ul>
     </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <div class="flex">
+                <ul class="icons">
+                    <li><a href="mailto:ibarz.jean@gmail.com" target="_blank" class="icon fa-mail-forward"><span class="label">Email</span><a></li>
+                        <li><a href="https://www.linkedin.com/in/jeanibarz/" target="_blank" class="icon fa-linkedin"><span class="label">linkedIn</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
     <!-- Libraries -->
     <script src="node_modules/audiolet/src/audiolet/Audiolet.js"></script>
     <script src="node_modules/vue/dist/vue.js"></script>
@@ -39,5 +60,6 @@
 
     <!-- Application -->
     <script src="js/app.js"></script>
-  </body>
+</body>
+
 </html>
