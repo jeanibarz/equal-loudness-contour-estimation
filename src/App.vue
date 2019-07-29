@@ -21,6 +21,9 @@
     name: 'app',
     components: {
       Home
+    },
+    created () {
+        document.title = "Equal Loudness Contour Estimation";
     }
   }
 </script>
