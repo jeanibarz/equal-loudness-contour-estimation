@@ -19,10 +19,10 @@
                 <button @click="decFreq" class="button special">&#9654; Decrease freq.</button>
             </li>
             <li id="inc_gain">
-                <button @click="incGain" class="button special">&#9654; Increase gain</button>
+                <button @click="incGain" class="button special" disabled="true">&#9654; Increase gain</button>
             </li>
             <li id="dec_gain">
-                <button @click="decGain" class="button special">&#9654; Decrease gain</button>
+                <button @click="decGain" class="button special" disabled="true">&#9654; Decrease gain</button>
             </li>
         </ul>
     </header>
@@ -45,11 +45,40 @@
 </div>
 </template>
 
+<!-- Development -->
+<script src="../../../Audiolet/src/audiolet/Audiolet.js"></script>
+
+<!-- Common 
+<script src="js/filter.js"></script> -->
+
+<!-- Noise library -->
+<script src="../../js/noise.js"></script>
+
 <script>
 import Vue from 'vue'
 import VueApexCharts from 'vue-apexcharts'
+import Noise from '../../js/noise.js'
 
 Vue.component('apexchart', VueApexCharts)
+
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+//set up the different audio nodes we will use for the app
+var noiseLeft = audioCtx.createPinkNoise();
+var noiseRight = audioCtx.createPinkNoise();
+var merger = audioCtx.createChannelMerger(2);
+var gainNode = audioCtx.createGain(0);
+var biquadFilter = audioCtx.createBiquadFilter("bandpass", 0, 1.0);
+
+// connect the nodes together
+noiseLeft.connect(merger, 0, 0);
+noiseRight.connect(merger, 0, 1);
+merger.connect(gainNode);
+gainNode.connect(biquadFilter);
+biquadFilter.connect(audioCtx.destination);
+
+// Manipulate the Biquad filter
+biquadFilter.Q.setValueAtTime(20, audioCtx.currentTime);
 
 export default {
     name: "Home",
@@ -98,9 +127,9 @@ export default {
                 this.playTestNoise();
             }
 
-            /* if(audioCtx.state === 'suspended') {
+            if(audioCtx.state === 'suspended') {
                 audioCtx.resume();
-            } */
+            }
         },
         incFreq() {
             this.testFreqIndex += 1;
@@ -114,28 +143,28 @@ export default {
         },
         incGain() {
             this.series[0].data[this.testFreqIndex] += 1.0
-            console.log("new value:"+this.series[0].data[this.testFreqIndex])
+            // console.log("new value:"+this.series[0].data[this.testFreqIndex])
         },
         decGain() {
             this.series[0].data[this.testFreqIndex] -= 1.0
         },
         playTestNoise() {
             //console.log('Test noise')
-            /* biquadFilter.frequency.setValueAtTime(frequencies[testFreqIndex], audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime); */
+            biquadFilter.frequency.setValueAtTime(this.frequencies[this.testFreqIndex], audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
             this.is_playing_noise = true
             this.is_test_noise = true;
         },
         playRefNoise() {
             //console.log('Ref noise')
-            /* biquadFilter.frequency.setValueAtTime(frequencies[refFreqIndex], audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime); */
+            biquadFilter.frequency.setValueAtTime(this.frequencies[this.refFreqIndex], audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
             this.is_playing_noise = true
             this.is_test_noise = false;
         },
         updateTestNoiseFreq() {
             if(this.is_playing_noise) {
-                if(this.is_test_noise) this.playTestNoise()
+                this.playTestNoise()
             }
         }
     }
