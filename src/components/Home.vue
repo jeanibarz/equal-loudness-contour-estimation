@@ -19,10 +19,16 @@
                 <button @click="decFreq" class="button special">&#9654; Decrease freq.</button>
             </li>
             <li id="inc_gain">
-                <button @click="incGain" class="button special" disabled="true">&#9654; Increase gain</button>
+                <button @click="incGain" class="button special">&#9654; Increase gain</button>
             </li>
             <li id="dec_gain">
-                <button @click="decGain" class="button special" disabled="true">&#9654; Decrease gain</button>
+                <button @click="decGain" class="button special">&#9654; Decrease gain</button>
+            </li>
+            <li id="bal_left">
+                <button @click="balLeft" class="button special">&#9654; Balance left</button>
+            </li>
+            <li id="bal_right">
+                <button @click="balRight" class="button special">&#9654; Balance right</button>
             </li>
         </ul>
     </header>
@@ -82,15 +88,18 @@ biquadFilter.Q.setValueAtTime(20, audioCtx.currentTime);
 
 export default {
     name: "Home",
-    data() {
+    data: function() {
+        let frequencies = [20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 310, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3100, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]
         return {
             title: 'Equal Loudness Contour Estimation',
             abstract: 'A simple program to estimate your individual Equal Loudness Contour.',
-            frequencies: [20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 310, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3100, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000],
             is_playing_noise: false,
             is_test_noise: true,
+            frequencies: frequencies,
+            frequenciesLength: frequencies.length,
             refFreqIndex: 14,
-            testFreqIndex: 14,
+            testFreqIndex: 16,
+            graph_width: 200,
             options: {
                 chart: {
                     id: 'vuechart-example'
@@ -99,7 +108,7 @@ export default {
                     title: {
                         text: "Frequency (Hz)"
                     },
-                    categories: [20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 310, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3100, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000],
+                    categories: frequencies,
                     name: 'Hz'
                 },
                 yaxis: {
@@ -110,14 +119,15 @@ export default {
             },
             series: [{
                 name: 'left',
-                data: [0, 0, 0, -1, -2, 3, 1, 2, 2, 2, 1, -2, -4, -7, -8, -7, -8, -10, -8, -3, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, -1, -2, 3, 1, 2, 2, 2, 1, -2, -4, -7, -8, -7, -8, -10, -8, -3, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0],
+                trigger: 0,
             }, {
                 name: 'right',
-                data: [0, 0, 1, 0, -1, 2, 2, 2, 2, 2, 1, -2, -4, -5, -5, -4, -3, -6, -5, -3, 1, 1, 3, -1, 0, 0, 0, 0, 0, 0, 0]
+                data: [0, 0, 1, 0, -1, 2, 2, 2, 2, 2, 1, -2, -4, -5, -5, -4, -3, -6, -5, -3, 1, 1, 3, -1, 0, 0, 0, 0, 0, 0, 0],
+                trigger: 0,
             }]
         }
     },
-
     methods: {
         play() {
             if (this.is_test_noise) {
@@ -133,20 +143,38 @@ export default {
         },
         incFreq() {
             this.testFreqIndex += 1;
-            if (this.testFreqIndex >= this.frequencies.length) this.testFreqIndex = 0;
+            if (this.testFreqIndex >= this.frequenciesLength) this.testFreqIndex = 0;
             this.updateTestNoiseFreq();
         },
         decFreq() {
             this.testFreqIndex -= 1;
-            if (this.testFreqIndex < 0) this.testFreqIndex = this.frequencies.length - 1;
+            if (this.testFreqIndex < 0) this.testFreqIndex = this.frequenciesLength - 1;
             this.updateTestNoiseFreq();
         },
         incGain() {
             this.series[0].data[this.testFreqIndex] += 1.0
+            this.series[1].data[this.testFreqIndex] += 1.0
+            this.series[0].trigger += 1
+            this.series[1].trigger += 1
             // console.log("new value:"+this.series[0].data[this.testFreqIndex])
         },
         decGain() {
             this.series[0].data[this.testFreqIndex] -= 1.0
+            this.series[1].data[this.testFreqIndex] -= 1.0
+            this.series[0].trigger += 1
+            this.series[1].trigger += 1
+        },
+        balLeft() {
+            this.series[0].data[this.testFreqIndex] += 0.5
+            this.series[1].data[this.testFreqIndex] -= 0.5
+            this.series[0].trigger += 1
+            this.series[1].trigger += 1
+        },
+        balRight() {
+            this.series[0].data[this.testFreqIndex] -= 0.5
+            this.series[1].data[this.testFreqIndex] += 0.5
+            this.series[0].trigger += 1
+            this.series[1].trigger += 1
         },
         playTestNoise() {
             //console.log('Test noise')
@@ -167,6 +195,10 @@ export default {
                 this.playTestNoise()
             }
         }
+    /* computed: {
+        frequenciesLength() {
+            return this.frequencies.length
+        } */
     }
 }
 </script>
