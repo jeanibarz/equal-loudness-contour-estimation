@@ -34,28 +34,16 @@
     </header>
 
     <body>
-        <div class="holder">
-            <ul class="icons">
-                <li v-for="(data, index) in frequencies" :key='index'>
-                    <span v-if="(index == testFreqIndex && is_test_noise) || (index == refFreqIndex && !is_test_noise)">(</span>
-                    <span v-if="index == testFreqIndex || index == refFreqIndex"><b>{{data}}</b></span>
-                    <span v-else>{{data}}</span>
-                    <span v-if="(index == testFreqIndex && is_test_noise) || (index == refFreqIndex && !is_test_noise)">)</span>
-                </li>
-            </ul>
-        </div>
         <div>
-            <apexchart width="1000" height="500" type="line" :options="options" :series="series"></apexchart>
+            <apexchart width="1000" height="500" type="line" :options="chart_options" :series="series"></apexchart>
         </div>
+        <!-- <Dropdown /> -->
     </body>
 </div>
 </template>
 
-<!-- Development -->
+<!-- Audiolet -->
 <script src="../../../Audiolet/src/audiolet/Audiolet.js"></script>
-
-<!-- Common 
-<script src="js/filter.js"></script> -->
 
 <!-- Noise library -->
 <script src="../../js/noise.js"></script>
@@ -64,9 +52,12 @@
 import Vue from 'vue'
 import VueApexCharts from 'vue-apexcharts'
 import Noise from '../../js/noise.js'
+//import Dropdown from "./dropdown";
+import Vuetify from 'vuetify';
 
-Vue.component('apexchart', VueApexCharts)
+Vue.use(Vuetify);
 
+var apexchart = Vue.component('apexchart', VueApexCharts)
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 //set up the different audio nodes we will use for the app
@@ -94,6 +85,8 @@ export default {
         let frequencies = [20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 310, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3100, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]
         let dataLeft = [0, 0, 0, -1, -2, 3, 1, 2, 2, 2, 1, -2, -4, -7, -8, -7, -8, -10, -8, -3, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
         let dataRight = [0, 0, 1, 0, -1, 2, 2, 2, 2, 2, 1, -2, -4, -5, -5, -4, -3, -6, -5, -3, 1, 1, 3, -1, 0, 0, 0, 0, 0, 0, 0]
+        let refFreqIndex = 14
+        let testFreqIndex = 16
         return {
             title: 'Equal Loudness Contour Estimation',
             abstract: 'A simple program to estimate your individual Equal Loudness Contour.',
@@ -103,10 +96,26 @@ export default {
             frequenciesLength: frequencies.length,
             dataLeft: dataLeft,
             dataRight: dataRight,
-            refFreqIndex: 14,
-            testFreqIndex: 16,
+            refFreqIndex: refFreqIndex,
+            testFreqIndex: testFreqIndex,
             graph_width: 200,
-            options: {
+/*             menu_config: {
+                options: [
+                {
+                    value: "Import data"
+                },
+                {
+                    value: "Export data"
+                }
+                ],
+                placeholder: "Menu",
+                backgroundColor: "#cde4f5",
+                textColor: "black",
+                borderRadius: "1.5em",
+                border: "1px solid gray",
+                width: 180,
+            }, */
+            chart_options: {
                 chart: {
                     id: 'vuechart-example'
                 },
@@ -121,11 +130,78 @@ export default {
                     title: {
                         text: "Amplitude (dB)"
                     },
-                    min: -50,
-                    max: 0,
+                    min: -20,
+                    max: 10,
+                },
+                markers: {
+                    size: 3,
+                    colors: undefined,
+                    strokeColors: '#fff',
+                    strokeWidth: 2,
+                    strokeOpacity: 0.9,
+                    fillOpacity: 1,
+                    discrete: [],
+                    shape: "circle",
+                    radius: 2,
+                    offsetX: 0,
+                    offsetY: 0,
+                    onClick: undefined,
+                    onDblClick: undefined,
+                    hover: {
+                    size: undefined,
+                    sizeOffset: 3
+                    }
                 },
                 legend: {
                     position: 'top',
+                },
+                stroke: {
+                    curve: 'smooth'
+                },
+                grid: {
+                    borderColor: '#e7e7e7',
+                    row: {
+                        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                        opacity: 0.5
+                    },
+                },
+                annotations: {
+                    xaxis: [
+                    {
+                        // in a datetime series, the x value should be a timestamp, just like it is generated below
+                        x: refFreqIndex+1,
+                        strokeDashArray: 0,
+                        borderColor: "orange",
+                        label: {
+                            borderColor: "orange",
+                            style: {
+                                color: "black",
+                                background: "orange"
+                            },
+                            orientation: "horizontal",
+                            position: 'top',
+                            offsetY: -5,
+                            text: "Ref."
+                        },
+                    },
+                    {
+                        // in a datetime series, the x value should be a timestamp, just like it is generated below
+                        x: testFreqIndex+1,
+                        strokeDashArray: 0,
+                        borderColor: "#775DD0",
+                        label: {
+                            borderColor: "#775DD0",
+                            style: {
+                                color: "#fff",
+                                background: "#775DD0"
+                            },
+                            orientation: "horizontal",
+                            position: 'top',
+                            offsetY: 15,
+                            text: "Test"
+                        }
+                    }
+                    ],
                 },
                 trigger: 0,
             },
@@ -137,19 +213,14 @@ export default {
                 name: 'right',
                 data: dataRight,
                 trigger: 0,
-            }]
+            }],
         }
     },
     methods: {
         play() {
             this.is_playing_noise = true
-
-            if (this.is_test_noise) {
-                this.playRefNoise();
-            }
-            else {
-                this.playTestNoise();
-            }
+            this.is_test_noise = !this.is_test_noise
+            this.playNoise()
 
             if(audioCtx.state === 'suspended') {
                 audioCtx.resume();
@@ -157,105 +228,68 @@ export default {
         },
         incFreq() {
             this.testFreqIndex += 1;
-            if (this.testFreqIndex >= this.frequenciesLength) this.testFreqIndex = 0;
-            if (this.is_playing_noise) {
-                this.playTestNoise();
+            if (this.testFreqIndex >= this.frequenciesLength) {
+                this.testFreqIndex = 0;
             }
+            if (this.is_playing_noise) {
+                this.is_test_noise = true
+                this.playNoise();
+            }
+
+            this.chart_options.annotations.xaxis[1].x = this.testFreqIndex+1
+            this.series[0].trigger += 1 // to trigger an update of the apexchart
         },
         decFreq() {
             this.testFreqIndex -= 1;
-            if (this.testFreqIndex < 0) this.testFreqIndex = this.frequenciesLength - 1;
-            if (this.is_playing_noise) {
-                this.playTestNoise();
+            if (this.testFreqIndex < 0) {
+                this.testFreqIndex = this.frequenciesLength - 1;
             }
+            if (this.is_playing_noise) {
+                this.is_test_noise = true
+                this.playNoise();
+            }
+
+            this.chart_options.annotations.xaxis[1].x = this.testFreqIndex+1
+            this.series[0].trigger += 1 // to trigger an update of the apexchart
         },
         incGain(canal, value) {
-            var freqIndex
-            if (this.is_test_noise) {
-                freqIndex = this.testFreqIndex
-            }
-            else {
-                freqIndex = this.refFreqIndex
-            }
-            this.series[canal].data[freqIndex] += value
+            this.series[canal].data[this.freqIndex] += value
         },
         incGainLeft(value) {
             this.incGain(0, value)
-            this.series[0].trigger += 1
-            this.updateNoise();
+            this.series[0].trigger += 1 // to trigger an update of the apexchart
+            this.playNoise();
         },
         incGainRight(value) {
             this.incGain(1, value)
-            this.series[1].trigger += 1
-            this.updateNoise();
+            this.series[1].trigger += 1 // to trigger an update of the apexchart
+            this.playNoise();
         },
-        playTestNoise() {
-            this.is_test_noise = true;
+        playNoise() {
+            this.is_playing_noise = true
 
-            biquadFilter.frequency.setValueAtTime(this.frequencies[this.testFreqIndex], audioCtx.currentTime);
+            biquadFilter.frequency.setValueAtTime(this.frequencies[this.freqIndex], audioCtx.currentTime);
             gainNodeLeft.gain.setValueAtTime(this.gainLeft, audioCtx.currentTime);
             gainNodeRight.gain.setValueAtTime(this.gainRight, audioCtx.currentTime);
-        },
-        playRefNoise() {
-            this.is_test_noise = false;
-
-            biquadFilter.frequency.setValueAtTime(this.frequencies[this.refFreqIndex], audioCtx.currentTime);
-            gainNodeLeft.gain.setValueAtTime(this.gainLeft, audioCtx.currentTime);
-            gainNodeRight.gain.setValueAtTime(this.gainRight, audioCtx.currentTime);
-        },
-        updateNoise() {
-            if (this.is_playing_noise) {
-                if (this.is_test_noise) {
-                    this.playTestNoise()
-                }
-                else {
-                    this.playRefNoise()
-                }
-            }
-        },
+        }
     },
     computed: {
         freqIndex() {
             if (this.is_test_noise) {
-                return this.testFreqIndex }
+                return this.testFreqIndex
+            }
             else {
-                return this.refFreqIndex }
+                return this.refFreqIndex
+            }
         },
         gainLeft() {
-            this.series[0].trigger
+            this.series[0].trigger // to force recomputing when this.series[0].trigger changes
             return Math.pow(10.0, (this.dataLeft[this.freqIndex])/20.0)
         },
         gainRight() {
-            this.series[1].trigger
+            this.series[1].trigger // to force recomputing when this.series[0].trigger changes
             return Math.pow(10.0, (this.dataRight[this.freqIndex])/20.0)
-        },
-        playingFreq() {
-            if (is_playing_noise) {
-                if (is_test_noise) {
-                    return this.frequencies[this.testFreqIndex]
-                }
-                else {
-                    return this.frequencies[this.refFreqIndex]
-                }
-            }
-            else {
-                return -1
-            }
-        },
-    },
-    mounted() {
-        console.log('mounted')
-        this.options.xaxis.labels = {
-            formatter: function(value) {
-                if (value == playingFreq) {
-                    return '<<< ' + value + '>>>'
-                }
-                else {
-                    return value + 'Hz'
-                }
-            }
         }
-        this.options.trigger += 1
-    }
+    },
 }
 </script>
