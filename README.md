@@ -10,3 +10,7 @@ Note: on windows, you might need to run `npm install --global windows-build-tool
 # Usage
 
 Follow the processus explained by David Griesinger here: https://www.youtube.com/watch?v=1VaKZr208Dc&feature=youtu.be
+
+# Demo
+
+Program is running and accessible @ http://jean-ibarz.com !
