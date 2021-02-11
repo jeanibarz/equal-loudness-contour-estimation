@@ -7,7 +7,7 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
-        "apexcharts": "^3.8.3",
+        "apexcharts": "^3.24.0",
         "audiolet": "git+https://github.com/jeanibarz/Audiolet.git",
         "vue": "^2.6.10",
         "vue-apexcharts": "^1.4.0"
